@@ -141,6 +141,9 @@ namespace DirectoryAccess
         /// <returns></returns>
         private bool SetDirectory(DirectoryInfo info, string key)
         {
+            if (info is null || string.IsNullOrEmpty(key))
+                return false;
+
             if (info.Exists)
             {
                 _configs.Set(key, info.FullName);

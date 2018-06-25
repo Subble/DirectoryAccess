@@ -29,8 +29,16 @@ namespace DirectoryAccess
         {
             if (host is null)
                 return false;
-                
-            return true;
+
+            var config = host.ServiceContainer.GetService<IConfigManager>();
+
+            if (config.HasValue(out var configManager))
+            {
+                host.ServiceContainer.RegisterService<IConfigManager>(new Directory(configManager), Version);
+                return true;
+            }
+
+            return false;
         }
     }
 }

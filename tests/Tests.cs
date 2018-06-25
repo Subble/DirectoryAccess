@@ -48,8 +48,7 @@ namespace DirectoryAccess.Tests
         [Theory]
         [InlineData(@"z:\invaliddir")]
         [InlineData(@"dsadefsefse")]
-        [InlineData(null)]
-        public void Use_Invalid_Dirs(string dirPath)
+        public void Ignore_Invalid_Dirs(string dirPath)
         {
             var dirInfo = new DirectoryInfo(dirPath);
             var dirAccess = new Directory(GetConfigMock());
@@ -59,6 +58,18 @@ namespace DirectoryAccess.Tests
             Assert.False(dirAccess.SetLocalDirectory(dirInfo));
             Assert.False(dirAccess.SetSyncDirectory(dirInfo));
             Assert.False(dirAccess.SetTempFolder(dirInfo));
+        }
+
+        [Fact]
+        public void Ignore_null_input()
+        {
+            var dirAccess = new Directory(GetConfigMock());
+
+            Assert.NotNull(dirAccess);
+
+            Assert.False(dirAccess.SetLocalDirectory(null));
+            Assert.False(dirAccess.SetSyncDirectory(null));
+            Assert.False(dirAccess.SetTempFolder(null));
         }
     }
 }
