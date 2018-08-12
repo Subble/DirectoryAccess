@@ -40,9 +40,9 @@ namespace DirectoryAccess.Tests
 
             Assert.NotNull(dirAccess);
 
-            Assert.True(dirAccess.TempFolder.Exists);
-            Assert.True(dirAccess.LocalDirectory.Exists);
-            Assert.True(dirAccess.SyncDiretory.Exists);
+            Assert.True(dirAccess.TempDirectory.Exists);
+            Assert.True(dirAccess.PrivateDirectory.Exists);
+            Assert.True(dirAccess.PublicDirectory.Exists);
         }
 
         [Theory]
@@ -55,9 +55,9 @@ namespace DirectoryAccess.Tests
 
             Assert.NotNull(dirAccess);
 
-            Assert.False(dirAccess.SetLocalDirectory(dirInfo));
-            Assert.False(dirAccess.SetSyncDirectory(dirInfo));
-            Assert.False(dirAccess.SetTempFolder(dirInfo));
+            Assert.False(dirAccess.SetPrivateDirectory(dirInfo));
+            Assert.False(dirAccess.SetPublicDirectory(dirInfo));
+            Assert.False(dirAccess.SetTempDirectory(dirInfo));
         }
 
         [Fact]
@@ -67,9 +67,9 @@ namespace DirectoryAccess.Tests
 
             Assert.NotNull(dirAccess);
 
-            Assert.False(dirAccess.SetLocalDirectory(null));
-            Assert.False(dirAccess.SetSyncDirectory(null));
-            Assert.False(dirAccess.SetTempFolder(null));
+            Assert.False(dirAccess.SetPrivateDirectory(null));
+            Assert.False(dirAccess.SetPublicDirectory(null));
+            Assert.False(dirAccess.SetTempDirectory(null));
         }
     }
 }

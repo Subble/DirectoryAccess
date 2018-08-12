@@ -11,13 +11,15 @@ namespace DirectoryAccess
 {
     public class Directory : IDirectory
     {
+        protected const string NAME_BASE = "DATA";
+
         protected const string NAME_TEMPFOLDER = "Temp";
-        protected const string NAME_LOCALDIR = "Local";
-        protected const string NAME_SYNCDIR = "Shared";
+        protected const string NAME_PRIVATE = "Private";
+        protected const string NAME_PUBLIC = "Public";
 
         protected const string KEY_TEMPFOLDER = "IDirectory.TempFolder.Path";
-        protected const string KEY_LOCALDIR = "IDirectory.LocalDirectory.Path";
-        protected const string KEY_SYNCDIR = "IDirectory.SyncDirectory.Path";
+        protected const string KEY_PRIVATE = "IDirectory.PrivateDirectory.Path";
+        protected const string KEY_PUBLIC = "IDirectory.PublicDirectory.Path";
 
         private readonly IConfigManager _configs;
 
@@ -26,40 +28,37 @@ namespace DirectoryAccess
             _configs = config;
 
             ResetDirectory(KEY_TEMPFOLDER, NAME_TEMPFOLDER);
-            ResetDirectory(KEY_LOCALDIR, NAME_LOCALDIR);
-            ResetDirectory(KEY_SYNCDIR, NAME_SYNCDIR);
-
-            TempFolder = LoadDirectoryPath(KEY_TEMPFOLDER, NAME_TEMPFOLDER);
-            LocalDirectory = LoadDirectoryPath(KEY_LOCALDIR, NAME_LOCALDIR);
-            SyncDiretory = LoadDirectoryPath(KEY_SYNCDIR, NAME_SYNCDIR);
+            ResetDirectory(KEY_PRIVATE, NAME_PRIVATE);
+            ResetDirectory(KEY_PUBLIC, NAME_PUBLIC);
         }
 
-        public DirectoryInfo TempFolder { get; private set; }
+        public DirectoryInfo TempDirectory
+            => LoadDirectoryPath(KEY_TEMPFOLDER, NAME_TEMPFOLDER);
 
-        public DirectoryInfo LocalDirectory { get; private set; }
+        public DirectoryInfo PrivateDirectory
+            => LoadDirectoryPath(KEY_PRIVATE, NAME_PRIVATE);
 
-        public DirectoryInfo SyncDiretory { get; private set; }
+        public DirectoryInfo PublicDirectory
+            => LoadDirectoryPath(KEY_PUBLIC, NAME_PUBLIC);
 
-        public DirectoryInfo GetDirectory(string pluginGuid, bool sync = false)
+        public DirectoryInfo GetDirectory(string pluginGuid, bool isPublic = false)
         {
-            DirectoryInfo rootDir = sync ? SyncDiretory : LocalDirectory;
+            DirectoryInfo rootDir = isPublic ? PublicDirectory : PrivateDirectory;
 
             if (string.IsNullOrEmpty(pluginGuid))
                 throw new ArgumentNullException("pluginGuid", "param can't be null or empty");
 
             var path = Path.Combine(rootDir.FullName, pluginGuid);
-            var dir = CreateDirectoryIfNew(path);
-
-            return dir;
+            return CreateDirectoryIfNew(path);
         }
 
-        public bool SetLocalDirectory(DirectoryInfo directory)
-            => SetDirectory(directory, KEY_LOCALDIR);
+        public bool SetPrivateDirectory(DirectoryInfo directory)
+            => SetDirectory(directory, KEY_PRIVATE);
 
-        public bool SetSyncDirectory(DirectoryInfo directory)
-            => SetDirectory(directory, KEY_SYNCDIR);
+        public bool SetPublicDirectory(DirectoryInfo directory)
+            => SetDirectory(directory, KEY_PUBLIC);
 
-        public bool SetTempFolder(DirectoryInfo directory)
+        public bool SetTempDirectory(DirectoryInfo directory)
             => SetDirectory(directory, KEY_TEMPFOLDER);
 
         /// <summary>
@@ -73,7 +72,7 @@ namespace DirectoryAccess
         }
 
         /// <summary>
-        /// Get the root directory that will have by default the temp, local and shared directory
+        /// Get the root directory that will have by default the temp, private and public directory
         /// </summary>
         /// <param name="subDirectory"></param>
         /// <returns></returns>
@@ -81,7 +80,7 @@ namespace DirectoryAccess
         {
             var pathsToCombine = new [] {
                 GetRunningDirectory().FullName,
-                "Storage"
+                NAME_BASE
             };
 
             if (!string.IsNullOrEmpty(subDirectory))
@@ -92,9 +91,7 @@ namespace DirectoryAccess
             }
 
             var path = Path.Combine(pathsToCombine);
-            var dir = CreateDirectoryIfNew(path);
-
-            return dir;
+            return CreateDirectoryIfNew(path);
         }
 
         /// <summary>
