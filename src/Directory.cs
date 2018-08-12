@@ -22,10 +22,12 @@ namespace DirectoryAccess
         protected const string KEY_PUBLIC = "IDirectory.PublicDirectory.Path";
 
         private readonly IConfigManager _configs;
+        private readonly string _workingDir;
 
-        public Directory(IConfigManager config)
+        public Directory(IConfigManager config, string workingDirectory)
         {
             _configs = config;
+            _workingDir = workingDirectory;
 
             ResetDirectory(KEY_TEMPFOLDER, NAME_TEMPFOLDER);
             ResetDirectory(KEY_PRIVATE, NAME_PRIVATE);
@@ -62,16 +64,6 @@ namespace DirectoryAccess
             => SetDirectory(directory, KEY_TEMPFOLDER);
 
         /// <summary>
-        /// Get directory of Subble.exe
-        /// </summary>
-        /// <returns></returns>
-        private DirectoryInfo GetRunningDirectory()
-        {
-            var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            return new DirectoryInfo(dir);
-        }
-
-        /// <summary>
         /// Get the root directory that will have by default the temp, private and public directory
         /// </summary>
         /// <param name="subDirectory"></param>
@@ -79,7 +71,7 @@ namespace DirectoryAccess
         private DirectoryInfo GetRootDirectory(string subDirectory = "")
         {
             var pathsToCombine = new [] {
-                GetRunningDirectory().FullName,
+                _workingDir,
                 NAME_BASE
             };
 

@@ -34,7 +34,8 @@ namespace DirectoryAccess
 
             if (config.HasValue(out var configManager))
             {
-                host.ServiceContainer.RegisterService<IConfigManager>(new Directory(configManager), Version);
+                var workDir = host.WorkingDirectory.FullName;
+                host.ServiceContainer.RegisterService<IConfigManager>(new Directory(configManager, workDir), Version);
                 return true;
             }
 

@@ -7,11 +7,15 @@ using System.Collections.Generic;
 
 using static Subble.Core.Func.Option;
 using System.IO;
+using System.Reflection;
 
 namespace DirectoryAccess.Tests
 {
     public class DirectoryTests
     {
+        private string GetWorkDir()
+            => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
         private IConfigManager GetConfigMock()
         {
             var dic = new Dictionary<string, string>();
@@ -36,7 +40,8 @@ namespace DirectoryAccess.Tests
         [Fact]
         public void Initialization_Tests()
         {
-            var dirAccess = new Directory(GetConfigMock());
+            var path = GetWorkDir();
+            var dirAccess = new Directory(GetConfigMock(), path);
 
             Assert.NotNull(dirAccess);
 
@@ -51,7 +56,8 @@ namespace DirectoryAccess.Tests
         public void Ignore_Invalid_Dirs(string dirPath)
         {
             var dirInfo = new DirectoryInfo(dirPath);
-            var dirAccess = new Directory(GetConfigMock());
+            var path = GetWorkDir();
+            var dirAccess = new Directory(GetConfigMock(), path);
 
             Assert.NotNull(dirAccess);
 
@@ -63,7 +69,8 @@ namespace DirectoryAccess.Tests
         [Fact]
         public void Ignore_null_input()
         {
-            var dirAccess = new Directory(GetConfigMock());
+            var path = GetWorkDir();
+            var dirAccess = new Directory(GetConfigMock(), path);
 
             Assert.NotNull(dirAccess);
 
